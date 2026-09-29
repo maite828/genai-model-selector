@@ -761,4 +761,3 @@ Reescribe de forma rigurosa en un parrafo de entre 45 y 75 palabras esta afirmac
 - Un parrafo
 - Entre 45 y 75 palabras
 - Tono academico prudente
-

@@ -55,7 +55,7 @@ def render(data):
             lines.extend(['', '### Objeto esperado', '', '```json',
                           json.dumps(c['expected_json'], indent=2, ensure_ascii=False), '```'])
         lines.append('')
-    return '\n'.join(lines) + '\n'
+    return '\n'.join(lines).rstrip() + '\n'
 
 
 if __name__ == '__main__':
