@@ -136,7 +136,7 @@ class ApiTests(unittest.TestCase):
 
     def test_local_execution_with_mock_provider(self):
         fake = MagicMock()
-        fake.get.return_value.json.return_value = {'models':[{'name':'test-local'}]}
+        fake.get.return_value.json.return_value = {'models':[{'name':'test-local', 'digest':'test-digest'}]}
         info = MagicMock(); info.json.return_value = {'details':{'family':'test'}}
         completion = MagicMock(); completion.json.return_value = {'response':'Respuesta local', 'done':True, 'eval_count':3}
         fake.post.side_effect = [info, completion]
@@ -148,6 +148,11 @@ class ApiTests(unittest.TestCase):
             history=self.client.get('/api/history').json()
             self.assertNotIn('Respuesta local',json.dumps(history))
             self.assertFalse(history[0]['execution']['energy_measured'])
+            self.assertEqual(history[0]['execution']['model_digest'], 'test-digest')
+            self.assertEqual(history[0]['execution']['context_tokens'], 4096)
+            payload = fake.post.call_args.kwargs['json']
+            self.assertEqual(payload['options']['num_ctx'], 4096)
+            self.assertEqual(payload['keep_alive'], '2m')
 
     def test_cloud_alias_is_blocked(self):
         fake=MagicMock()

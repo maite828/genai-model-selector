@@ -108,7 +108,8 @@ def execute_model(request: RouteRequest):
             if info.json().get('remote_host') or info.json().get('remote_model'):
                 raise HTTPException(409, 'Se ha bloqueado un modelo respaldado por la nube.')
             res = client.post(OLLAMA + '/api/generate', json={'model': binding, 'prompt': request.prompt,
-                              'stream': False, 'options': {'temperature': 0, 'num_predict': request.output_tokens}})
+                              'stream': False, 'keep_alive': '2m',
+                              'options': {'temperature': 0, 'num_ctx': 4096, 'num_predict': request.output_tokens}})
             res.raise_for_status()
             data = res.json()
             if not isinstance(data.get('response'), str) or not data.get('done'):
@@ -122,6 +123,8 @@ def execute_model(request: RouteRequest):
         save(result)
         raise HTTPException(502, 'Ollama no ha completado la respuesta. Comprueba el servicio y el modelo local.')
     result['execution'] = {'status': 'completed', 'model': binding,
+                           'model_digest': model.get('digest'), 'context_tokens': 4096,
+                           'done_reason': data.get('done_reason'),
                            'latency_ms': round((time.perf_counter() - started) * 1000),
                            'input_tokens': data.get('prompt_eval_count'), 'output_tokens': data.get('eval_count'),
                            'energy_measured': False}

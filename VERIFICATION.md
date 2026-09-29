@@ -36,11 +36,22 @@ Compilacion Vite correcta; instalacion npm sin vulnerabilidades reportadas.
 - Ancho del documento movil igual al viewport: 390 px.
 - Grafico de pesos visible; sin errores de consola observados.
 
-## Limites
+## Ejecucion local del piloto
 
-No se ha ejecutado inferencia real: Ollama no estaba activo y no se han
-vinculado ni descargado modelos. No se han medido energia, emisiones o calidad.
-Las pruebas del adaptador usan un proveedor simulado. La exportacion JSON
-esta implementada; no se verifico una descarga completa mediante navegador.
+Ollama 0.30.10 se ejecuto en el MacBook Air M4 con nube deshabilitada,
+`OLLAMA_NUM_PARALLEL=1`, `OLLAMA_MAX_LOADED_MODELS=1` y contexto de 4096 tokens.
+Los nombres del prototipo quedaron vinculados asi:
+
+- `local-small` -> `llama3.2:latest`, digest `a80c4f17...`, respuesta desde la interfaz en 3,80 s con 62 tokens.
+- `local-large` -> `qwen2.5:latest`, digest `845dbda0...`, respuesta desde la interfaz en 16,60 s con 261 tokens.
+
+Ambas ejecuciones fueron locales y finalizaron correctamente. El digest completo
+y las métricas devueltas por Ollama se conservan en el historial local de esa
+sesión y en el informe de prueba fuera del repositorio. Las latencias dependen de
+la solicitud y no son todavía una comparación experimental.
+
+No se han medido energia, emisiones o calidad. Las pruebas del adaptador
+automatizado usan un proveedor simulado. La exportacion JSON esta implementada;
+no se verifico una descarga completa mediante navegador.
 No se ha realizado una auditoria de seguridad ni una prueba de carga.
 Las decisiones creadas durante la comprobacion visual son datos de demostracion.

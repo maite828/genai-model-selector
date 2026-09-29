@@ -52,6 +52,19 @@ envian solicitudes a proveedores remotos, incluso si su candidato resulta ganado
 
 ## Vinculacion local opcional
 
+En el equipo del piloto, con Ollama activo y los modelos ya instalados:
+
+```sh
+.venv/bin/python run_local.py
+```
+
+Este arranque vincula `local-small` a `llama3.2:latest` (3B) y `local-large`
+a `qwen2.5:latest` (7B), sin descargar nada. Las variables de entorno explicitas
+tienen prioridad. Detener antes cualquier servidor que ocupe el puerto 8765.
+El contexto de ejecucion es de 4096 tokens; el modelo permanece cargado hasta
+dos minutos tras la respuesta. El historial conserva su digest para identificar
+la version efectiva, ya que la etiqueta `latest` puede cambiar.
+
 Con Ollama activo y modelos ya instalados, establecer nombres exactos antes de
 arrancar el servidor:
 
