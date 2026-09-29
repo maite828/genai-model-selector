@@ -140,3 +140,31 @@ Pruebas del empaquetado (sin inferencia):
 ```sh
 .venv/bin/python -m unittest discover -s evaluation/pilot -p 'test_*.py' -v
 ```
+
+## Consolidar las valoraciones
+
+Cada evaluador completa su `puntuaciones.csv` conservando identificadores y
+columnas. Usar enteros 0-3 en las cuatro dimensiones. En `errores_criticos`
+escribir `ninguno` si no hay errores, o `C1;C2` para los errores correspondientes
+al orden de la lista del caso (C1 es el primero). No dejar una celda vacia para
+significar cero o ausencia de errores. Las penalizaciones requieren evidencia.
+En los casos de codigo, completar pruebas superadas y total solo despues de
+ejecutarlas en un entorno aislado; mientras tanto quedan pendientes.
+
+Guardar las fichas devueltas dentro de las respectivas subcarpetas del ensayo.
+El consolidador admite CSV separado por comas o por punto y coma, en UTF-8.
+
+```sh
+.venv/bin/python evaluation/pilot/consolidate.py data/pilot/IDENTIFICADOR_DEL_ENSAYO
+```
+
+El informe comprueba las 80 valoraciones, identidad de las filas, rangos y
+evidencia. Cada uso crea un informe fechado sin sobrescribir fichas o informes
+anteriores. Mientras quede alguna valoracion pendiente, informa solo del avance.
+Cuando ambos terminan, calcula Q y acuerdo entre evaluadores y senala los
+desacuerdos previstos en la rubrica, conservando las dos notas originales.
+
+El informe no lee la clave de modelos ni emite rankings por modelo. La media de
+dos notas se etiqueta como media, no como consenso. La adjudicacion de desacuerdos
+y la posterior comparacion de modelos son pasos separados. Los resultados no
+se incorporan automaticamente al catalogo de seleccion.
