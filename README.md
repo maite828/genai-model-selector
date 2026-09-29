@@ -108,8 +108,8 @@ como si fueran mediciones. La licencia MIT original del repositorio se conserva.
 
 El [piloto de veinte casos](evaluation/pilot/README.md) incluye enunciados,
 criterios esperados, pruebas de referencia de codigo, rubrica de doble
-evaluacion y ficha de valoracion. Los materiales estan preparados; este
-conjunto aun no se ha ejecutado ni puntuado.
+evaluacion y ficha de valoracion. Su ejecutor captura 40 respuestas locales y
+prepara paquetes anonimizados; las puntuaciones requieren revision humana.
 
 1. Acordar hardware y modelos concretos y caracterizar su rendimiento.
 2. Sustituir el catalogo sintetico por uno medido, versionado y congelado.

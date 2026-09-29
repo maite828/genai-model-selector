@@ -3,13 +3,16 @@
 Objetivo: comprobar la viabilidad del protocolo, descubrir problemas del selector
 y ajustar la evaluacion antes de fijar el experimento final.
 
-Material preparado, aun sin ejecutar ni puntuar este conjunto.
+Material preparado para captura local y evaluacion humana independiente.
+Las ejecuciones concretas se documentan en su manifest local; las puntuaciones
+solo se incorporan tras la revision de los dos evaluadores.
 
 - [Casos legibles](CASES.md): los veinte enunciados y sus criterios.
 - [Casos estructurados](cases.json): fuente para un futuro ejecutor.
 - [Rubrica](RUBRIC.md): escala, pesos y procedimiento de doble evaluacion.
 - [Ficha de valoracion](REVIEW_TEMPLATE.md): registro de evidencia y puntuaciones.
 - `prepare.py`: valida la estructura y genera el cuaderno legible; no llama modelos.
+- `run_pilot.py`: captura las 40 respuestas y prepara paquetes de evaluacion separados.
 
 ## Composicion
 
@@ -97,6 +100,43 @@ Desde la raiz del repositorio:
 python3 evaluation/pilot/prepare.py
 ```
 
-El siguiente trabajo es implementar la captura local de las 40 respuestas y
-la preparacion de paquetes anonimizados para evaluacion. Este paquete define
-los materiales previos y no afirma que esas ejecuciones ya se hayan realizado.
+## Ejecutar y distribuir
+
+Con Ollama local activo, los dos modelos instalados y nube deshabilitada:
+
+```sh
+.venv/bin/python evaluation/pilot/run_pilot.py
+```
+
+Cada ejecucion crea una carpeta nueva `data/pilot/<run_id>/`, excluida de Git.
+No descarga modelos. Comprueba sus digest al principio y al final de cada bloque.
+Guarda cada intento inmediatamente y conserva fallos; ante un timeout se detiene
+para evitar solapar solicitudes. Los paquetes de una ejecucion interrumpida
+muestran su numero de respuestas y no deben presentarse como un piloto completo.
+
+Dentro de cada carpeta:
+
+- `evaluacion_Maite/` y `evaluacion_Arturo/`: cuaderno con respuestas, rubrica,
+  respuestas JSON anonimizadas y CSV de puntuaciones inicialmente vacio.
+- `RESTRINGIDO_correspondencia_modelos.json`: clave para identificar los modelos;
+  no distribuir junto con las fichas ni abrir antes de completar las puntuaciones.
+- `RESTRINGIDO_resultados.jsonl`: respuestas originales, identidad y tiempos.
+- `manifest.json`: estado, recuentos, modelos, condiciones, calentamientos y hashes.
+- `snapshot_*`: copia de materiales y ejecutor usados en ese ensayo.
+
+Entregar a cada evaluador solamente su subcarpeta. Los mismos identificadores
+anonimos permiten comparar las valoraciones, aunque el orden se mezcla de forma
+independiente. Esta ocultacion administrativa no garantiza que el estilo de una
+respuesta no sugiera su origen. El propietario de los archivos puede acceder a
+la clave: es una separacion de materiales, no un control de acceso.
+
+No se ejecuta codigo generado ni se asignan puntuaciones automaticamente.
+En los casos de codigo, dejar las pruebas funcionales pendientes hasta contar
+con un ejecutor aislado. Las respuestas de cualquier familia se conservan
+exactamente como fueron generadas, incluidas las truncadas.
+
+Pruebas del empaquetado (sin inferencia):
+
+```sh
+.venv/bin/python -m unittest discover -s evaluation/pilot -p 'test_*.py' -v
+```
