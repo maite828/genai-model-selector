@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="es"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#192521"><title>Selector | Laboratorio TFM</title></head>
+<body><div class="shell">
+  <aside class="sidebar">
+    <a class="brand" href="/" aria-label="Selector, inicio"><span class="brand-icon"><i data-lucide="workflow"></i></span><span>Selector<small>LABORATORIO TFM</small></span></a>
+    <div class="project-label">ESPACIO DE TRABAJO</div>
+    <nav aria-label="Navegación principal">
+      <button class="nav active" data-view="workspace" title="Selección"><i data-lucide="sliders-horizontal"></i>Selección<span>01</span></button>
+      <button class="nav" data-view="catalog" title="Catálogo"><i data-lucide="database"></i>Catálogo<span>03</span></button>
+      <button class="nav" data-view="history" title="Decisiones"><i data-lucide="history"></i>Decisiones</button>
+      <button class="nav" data-view="method" title="Metodología"><i data-lucide="git-branch"></i>Metodología</button>
+    </nav>
+    <div class="sidebar-bottom"><div class="connection"><span class="dot"></span> Entorno local</div><p>Echeverry · Torres</p><small>UNIR / TFM · Prototipo 0.1</small></div>
+  </aside>
+  <main>
+    <header class="topbar"><span>Investigación aplicada <span class="slash">/</span> Selección de modelos GenAI</span><span class="badge neutral">Desarrollo</span></header>
+    <div class="content">
+      <div class="page-title"><div><p class="eyebrow">SISTEMA MULTICRITERIO</p><h1 id="view-title">Selección de modelos</h1></div><span class="version">WSM <span>·</span> v0.1</span></div>
+      <div class="notice"><i data-lucide="flask-conical"></i><span>Catálogo de demostración <strong>Calidad, coste y emisiones sintéticos. Sin calibración experimental.</strong></span></div>
+      <section id="workspace" class="view">
+        <div class="workspace-grid">
+          <form id="request-form" class="request-panel">
+            <div class="section-heading"><h2>Nueva solicitud</h2><select id="example" aria-label="Cargar un caso de ejemplo"><option value="">Casos de ejemplo</option><option value="summary">Resumen público</option><option value="private">Documento sensible</option><option value="code">Código Python</option><option value="abstain">Presupuesto cero</option></select></div>
+            <label for="prompt">Contenido de la solicitud</label><textarea id="prompt" required maxlength="20000" placeholder="Escribe tu solicitud…">Resume en cinco puntos las ventajas y limitaciones del trabajo en equipo en un proyecto de investigación.</textarea><div class="field-meta"><span><i data-lucide="lock-keyhole"></i>Contenido no guardado en el historial</span><span id="char-count"></span></div>
+            <div class="two-col"><div><label for="task">Tipo de tarea</label><select id="task"><option value="summary">Resumen</option><option value="knowledge">Conocimiento</option><option value="reasoning">Razonamiento</option><option value="code">Código</option><option value="writing">Redacción</option></select></div><div><label for="privacy">Clasificación de los datos</label><select id="privacy"><option value="internal">Uso interno</option><option value="public">Públicos</option><option value="sensitive">Sensibles</option></select></div></div>
+            <div class="toggle-row"><span><i data-lucide="cloud"></i>Permitir candidatos remotos</span><input type="checkbox" id="allow-remote" role="switch" aria-label="Permitir candidatos remotos" disabled></div>
+            <div class="section-heading spaced"><h2>Preferencias</h2><span class="small muted">Pesos fijos</span></div>
+            <div class="segmented" role="group" aria-label="Perfil de selección"><button type="button" class="chosen" data-profile="balanced">Equilibrio</button><button type="button" data-profile="quality">Calidad</button><button type="button" data-profile="cost">Coste</button><button type="button" data-profile="emissions">Emisiones</button></div>
+            <div class="weight-chart"><canvas id="weights-chart" aria-label="Distribución de los pesos" role="img"></canvas></div><div class="legend"><span><b class="key quality"></b>Calidad <strong id="w-quality">34%</strong></span><span><b class="key cost"></b>Coste <strong id="w-cost">33%</strong></span><span><b class="key emissions"></b>Emisiones <strong id="w-emissions">33%</strong></span></div>
+            <div class="two-col limits"><div><label for="budget">Coste máximo estimado (€)</label><input type="number" id="budget" min="0" max="10" step="0.0001" value="0.02" required></div><div><label for="tokens">Límite de salida (tokens)</label><input type="number" id="tokens" min="32" max="2048" step="1" value="512" required></div></div>
+            <label for="min-quality" class="range-label">Calidad mínima de referencia <output id="quality-value">0%</output></label><input type="range" id="min-quality" min="0" max="100" value="0">
+            <button id="route-btn" class="primary" type="submit"><i data-lucide="arrow-right"></i>Evaluar selección</button>
+          </form>
+          <section class="decision-panel" aria-labelledby="decision-title"><div class="section-heading"><h2 id="decision-title">Decisión</h2><span id="decision-status" class="badge neutral">Pendiente</span></div><div id="decision" aria-live="polite"><div class="empty-decision"><i data-lucide="git-pull-request-arrow"></i><h3>Sin decisión</h3><span class="muted">3 candidatos · 4 perfiles · WSM</span></div></div><div id="execution" hidden><button class="secondary" id="execute-btn" type="button"><i data-lucide="play"></i>Ejecutar en Ollama</button><p id="execution-note" class="small muted"></p><pre id="response" hidden></pre></div><div id="error" role="alert" hidden></div></section>
+        </div>
+        <section class="comparison"><div class="section-heading"><h2>Comparación de candidatos</h2><button id="export" class="icon-button" title="Descargar la decisión en JSON" aria-label="Descargar la decisión en JSON" disabled><i data-lucide="download"></i></button></div><div class="table-scroll"><table><thead><tr><th>Modelo</th><th>Ubicación</th><th>Calidad ref.</th><th>Coste estimado</th><th>Emisiones estimadas</th><th>Puntuación WSM</th></tr></thead><tbody id="comparison-body"></tbody></table></div></section>
+      </section>
+      <section id="catalog" class="view" hidden><div class="section-heading"><h2>Catálogo versionado</h2><span class="small muted" id="catalog-version"></span></div><div id="catalog-list"></div><div class="section-heading spaced"><h2>Conexión local</h2><button id="refresh-health" class="icon-button" title="Comprobar Ollama" aria-label="Comprobar Ollama"><i data-lucide="refresh-cw"></i></button></div><div id="health" class="health-status" aria-live="polite">Comprobación pendiente</div></section>
+      <section id="history" class="view" hidden><div class="section-heading"><h2>Registro de decisiones</h2><button class="secondary danger" id="clear-history"><i data-lucide="trash-2"></i>Borrar historial</button></div><div id="history-list"></div></section>
+      <section id="method" class="view" hidden><div class="method-grid"><section><h2>Protocolo de selección</h2><ol class="protocol"><li><strong>Análisis local</strong><p>Tarea declarada por el usuario y detección heurística de algunas señales sensibles. No es un detector exhaustivo de datos personales.</p></li><li><strong>Restricciones no compensatorias</strong><p>Datos internos o sensibles: solo local. Presupuesto y calidad mínima: exclusión antes de puntuar.</p></li><li><strong>Normalización y WSM</strong><p>Min-max sobre el catálogo completo para cada tarea. Calidad creciente; coste y emisiones decrecientes. Suma de utilidades por sus pesos.</p></li><li><strong>Decisión o abstención</strong><p>Mayor puntuación entre los admisibles. Empates: menor coste y después identificador. Sin candidatos: abstención.</p></li></ol></section><section><h2>Estado de la evidencia</h2><dl class="evidence"><dt>Calidad</dt><dd>Valores ficticios por familia de tareas.</dd><dt>Coste y emisiones</dt><dd>Tasas sintéticas por 1.000 tokens. Entrada aproximada por caracteres y salida máxima solicitada. No son mediciones ni garantías de presupuesto.</dd><dt>Orquestación</dt><dd>Flujo determinista en LangGraph. La autonomía agéntica avanzada queda pendiente de desarrollar y evaluar.</dd><dt>Ejecución</dt><dd>Adaptador local Ollama. Ejecución remota deshabilitada. Sin medición energética ni comparación experimental todavía.</dd><dt>Persistencia</dt><dd>Historial local de métricas, restricciones y decisiones. Sin solicitudes ni respuestas; conserva metadatos hasta su borrado.</dd></dl></section></div></section>
+      <footer><span><i data-lucide="shield-check"></i>Privacidad como restricción</span><span>Primera iteración · Septiembre 2026</span></footer>
+    </div>
+  </main>
+</div><script type="module" src="/src/main.js"></script></body></html>
