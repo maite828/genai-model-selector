@@ -106,6 +106,11 @@ como si fueran mediciones. La licencia MIT original del repositorio se conserva.
 
 ## Pendiente para el TFM
 
+El [piloto de veinte casos](evaluation/pilot/README.md) incluye enunciados,
+criterios esperados, pruebas de referencia de codigo, rubrica de doble
+evaluacion y ficha de valoracion. Los materiales estan preparados; este
+conjunto aun no se ha ejecutado ni puntuado.
+
 1. Acordar hardware y modelos concretos y caracterizar su rendimiento.
 2. Sustituir el catalogo sintetico por uno medido, versionado y congelado.
 3. Definir politicas y conectar el proveedor remoto con consentimiento explicito.

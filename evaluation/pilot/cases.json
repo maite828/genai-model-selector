@@ -1,0 +1,173 @@
+{
+  "version": "pilot-v1",
+  "split": "pilot_only",
+  "language": "es",
+  "data_origin": "Casos originales sinteticos; sin datos personales reales",
+  "cases": [
+    {
+      "id": "K01", "task": "knowledge", "privacy": "public", "allow_remote": true,
+      "title": "Memoria y almacenamiento", "difficulty": "basic",
+      "prompt": "Ficha de referencia: La RAM mantiene datos de trabajo mientras el equipo funciona; su contenido se pierde al apagarlo. El SSD conserva archivos sin alimentacion. Un equipo tiene 16 GB de RAM y 512 GB de SSD. Responde en tres puntos, usando solo la ficha: 1) que recurso conserva los archivos al apagar; 2) que capacidad corresponde a la memoria de trabajo; 3) si ampliar el SSD aumenta por si solo la RAM.",
+      "expected_points": ["El SSD conserva los archivos", "La memoria de trabajo es de 16 GB", "Ampliar el SSD no aumenta la RAM"],
+      "critical_errors": ["Confundir persistencia de RAM y SSD", "Afirmar que ampliar el SSD aumenta la RAM"],
+      "format_checks": ["Exactamente tres puntos", "Sin informacion externa"]
+    },
+    {
+      "id": "K02", "task": "knowledge", "privacy": "public", "allow_remote": true,
+      "title": "Alcance de una medida", "difficulty": "intermediate",
+      "prompt": "Ficha de referencia: El tiempo de carga mide la preparacion del modelo. La latencia total abarca desde el envio de una solicitud hasta la respuesta completa, incluida la carga si la hay. Tokens por segundo mide la generacion, no la exactitud. En una prueba se anotan 5 segundos de carga, 12 segundos totales y 20 tokens por segundo. En tres frases explica que significa cada cifra y si permiten concluir que la respuesta es correcta.",
+      "expected_points": ["5 s corresponden a la preparacion", "12 s son el tiempo total e incluyen la carga en esta prueba", "20 tokens/s es velocidad de generacion y no demuestra correccion"],
+      "critical_errors": ["Sumar 5 y 12 como latencia total", "Inferir calidad por la velocidad"],
+      "format_checks": ["Tres frases", "Explica las tres cifras y la limitacion"]
+    },
+    {
+      "id": "K03", "task": "knowledge", "privacy": "internal", "allow_remote": true,
+      "title": "Politica interna cerrada", "difficulty": "basic",
+      "prompt": "Manual ficticio interno: las solicitudes publicas pueden usar modelos locales o remotos si existe autorizacion. Las solicitudes internas o sensibles solo pueden usar modelos locales. La calidad no anula esta regla. Responde en dos puntos: que destinos admite una solicitud interna aunque se autorice el uso remoto, y si una mayor calidad del remoto cambia la decision.",
+      "expected_points": ["La solicitud interna solo admite destinos locales", "La autorizacion remota no supera la restriccion interna", "Una mayor calidad remota no cambia esa restriccion"],
+      "critical_errors": ["Permitir el remoto para una solicitud interna"],
+      "format_checks": ["Dos puntos", "Aplicar solo el manual ficticio"]
+    },
+    {
+      "id": "K04", "task": "knowledge", "privacy": "public", "allow_remote": false,
+      "title": "Reconocer un dato ausente", "difficulty": "intermediate",
+      "prompt": "Ficha ficticia del modelo Delta: contexto de 4096 tokens, ejecucion local, latencia observada de 4 segundos. No hay mas informacion. Contesta con las claves energia_kwh, calidad_evaluada y latencia_segundos en un objeto JSON sin texto adicional. Usa null si la ficha no aporta el dato; no estimes ni completes los valores ausentes.",
+      "expected_points": ["energia_kwh es null", "calidad_evaluada es null", "latencia_segundos es 4"],
+      "critical_errors": ["Inventar energia o calidad"],
+      "format_checks": ["Objeto JSON valido", "Exactamente las tres claves solicitadas", "Sin texto adicional"],
+      "expected_json": {"energia_kwh": null, "calidad_evaluada": null, "latencia_segundos": 4}
+    },
+    {
+      "id": "R01", "task": "reasoning", "privacy": "public", "allow_remote": true,
+      "title": "Presupuesto aritmetico", "difficulty": "basic",
+      "prompt": "En un escenario ficticio cada solicitud cuesta exactamente 0,004 euros y el presupuesto es 0,020 euros. No hay otros costes. Indica el numero maximo entero de solicitudes completas, el coste de seis solicitudes y si seis caben en el presupuesto. Muestra una operacion breve para justificarlo.",
+      "expected_points": ["Caben cinco solicitudes", "Seis cuestan 0,024 euros", "Seis exceden el presupuesto"],
+      "critical_errors": ["Admitir seis solicitudes", "Error en los resultados numericos"],
+      "format_checks": ["Incluye al menos una operacion", "Responde las tres cuestiones"]
+    },
+    {
+      "id": "R02", "task": "reasoning", "privacy": "public", "allow_remote": false,
+      "title": "Dependencias temporales", "difficulty": "intermediate",
+      "prompt": "Una tarea A dura 2 horas. B dura 3 horas y empieza al terminar A. C dura 4 horas y tambien empieza al terminar A. B y C pueden ejecutarse en paralelo sin limitaciones de recursos. D dura 1 hora y empieza cuando terminan B y C. Todas las tareas empiezan lo antes posible. Calcula el tiempo total minimo e indica la cadena que lo determina. Explica la operacion en no mas de 80 palabras.",
+      "expected_points": ["Tiempo total minimo de siete horas", "La cadena determinante es A-C-D", "Se usa 2 + max(3,4) + 1"],
+      "critical_errors": ["Sumar B y C como si fueran secuenciales", "Dar una duracion distinta de siete horas"],
+      "format_checks": ["Como maximo 80 palabras", "Justificacion breve"]
+    },
+    {
+      "id": "R03", "task": "reasoning", "privacy": "sensitive", "allow_remote": true,
+      "title": "Restricciones antes de preferencias", "difficulty": "intermediate",
+      "prompt": "Ejercicio ficticio, sin datos reales. Una solicitud sensible solo puede usar modelos locales. Su presupuesto maximo es 0,005 euros. A es local, cuesta 0,004 y tiene calidad 0,75. B es remoto, cuesta 0,002 y tiene calidad 0,95. C es local, cuesta 0,006 y tiene calidad 0,90. Indica que candidato es admisible y explica por que se excluye cada uno de los otros. Usa tres puntos.",
+      "expected_points": ["A es el unico admisible", "B se excluye por privacidad aunque sea mejor y mas barato", "C se excluye por superar el presupuesto"],
+      "critical_errors": ["Elegir B o C", "Tratar la privacidad como una preferencia compensable"],
+      "format_checks": ["Tres puntos", "Una justificacion por candidato"]
+    },
+    {
+      "id": "R04", "task": "reasoning", "privacy": "internal", "allow_remote": false,
+      "title": "Abstencion justificada", "difficulty": "intermediate",
+      "prompt": "Ejercicio ficticio: una solicitud interna exige un modelo local y calidad minima 0,90. A es local con calidad 0,80; B es local con calidad 0,85; C es remoto con calidad 0,97. Ninguna otra regla permite excepciones. Indica la decision y explica en un parrafo breve por que elegir el candidato con mayor calidad no resuelve el problema.",
+      "expected_points": ["El sistema debe abstenerse", "A y B no alcanzan el umbral", "C incumple la exigencia local"],
+      "critical_errors": ["Elegir cualquier candidato", "Rebajar una restriccion sin autorizacion"],
+      "format_checks": ["Un parrafo breve", "Explica por que C no resuelve el problema"]
+    },
+    {
+      "id": "C01", "task": "code", "privacy": "public", "allow_remote": true,
+      "title": "Eliminar duplicados", "difficulty": "basic",
+      "prompt": "Escribe en Python una funcion unique_in_order(values) que reciba una lista de enteros y devuelva una lista sin repetidos, conservando el orden de la primera aparicion. No modifiques la entrada. Una lista vacia debe devolver []. Entrega solo la funcion, sin imports, explicaciones ni llamadas de ejemplo.",
+      "expected_points": ["Conserva el orden de primera aparicion", "Elimina duplicados y admite negativos y cero", "Gestiona la lista vacia y no modifica la entrada"],
+      "critical_errors": ["Ordenar la salida en lugar de conservar el orden", "Modificar la entrada", "Funcion no ejecutable"],
+      "format_checks": ["Solo la funcion solicitada", "Sin imports ni llamadas de ejemplo"],
+      "code_tests": {"function": "unique_in_order", "preserve_inputs": true, "fixtures": [{"args": [[3,1,3,2,1]], "expected": [3,1,2]}, {"args": [[]], "expected": []}, {"args": [[0,-1,0,-1,2]], "expected": [0,-1,2]}, {"args": [[5,5,5]], "expected": [5]}]}
+    },
+    {
+      "id": "C02", "task": "code", "privacy": "public", "allow_remote": false,
+      "title": "Media con ausencias", "difficulty": "intermediate",
+      "prompt": "Escribe en Python mean_valid(values). La lista contiene solo numeros o None. Devuelve la media de los numeros ignorando None. Si no queda ningun numero, devuelve None. El cero es un numero valido. No modifiques la lista. Entrega solo la funcion, sin imports, explicaciones ni llamadas de ejemplo.",
+      "expected_points": ["Ignora solo None, no el cero", "Calcula la media de todos los numeros restantes", "Devuelve None si no hay numeros y conserva la entrada"],
+      "critical_errors": ["Excluir ceros", "Dividir por cero", "Modificar la entrada", "Funcion no ejecutable"],
+      "format_checks": ["Solo la funcion solicitada", "Sin imports ni llamadas de ejemplo"],
+      "code_tests": {"function": "mean_valid", "preserve_inputs": true, "fixtures": [{"args": [[0,2,null]], "expected": 1.0}, {"args": [[null,null]], "expected": null}, {"args": [[]], "expected": null}, {"args": [[-2,2,6]], "expected": 2.0}]}
+    },
+    {
+      "id": "C03", "task": "code", "privacy": "internal", "allow_remote": true,
+      "title": "Filtro local estricto", "difficulty": "intermediate",
+      "prompt": "Ejercicio sobre un catalogo ficticio interno. Escribe local_ids(models), que recibe una lista de diccionarios con clave id y una clave location opcional. Devuelve los id de las entradas cuyo location sea exactamente 'local', conservando el orden. Excluye las entradas sin location; no modifiques los datos. Entrega solo la funcion Python, sin imports, explicaciones ni llamadas de ejemplo.",
+      "expected_points": ["Incluye solo location exactamente igual a local", "Excluye remotos y valores ausentes", "Conserva orden y datos de entrada"],
+      "critical_errors": ["Incluir ubicaciones ausentes o remotas", "Modificar la entrada", "Funcion no ejecutable"],
+      "format_checks": ["Solo la funcion solicitada", "Sin imports ni llamadas de ejemplo"],
+      "code_tests": {"function": "local_ids", "preserve_inputs": true, "fixtures": [{"args": [[{"id":"a","location":"local"},{"id":"b","location":"remote"},{"id":"c"}]], "expected": ["a"]}, {"args": [[]], "expected": []}, {"args": [[{"id":"x","location":"LOCAL"},{"id":"y","location":null}]], "expected": []}, {"args": [[{"id":"b","location":"local"},{"id":"a","location":"local"}]], "expected": ["b","a"]}]}
+    },
+    {
+      "id": "C04", "task": "code", "privacy": "public", "allow_remote": true,
+      "title": "Seleccion y desempate", "difficulty": "intermediate",
+      "prompt": "Escribe best_candidate(items). Cada diccionario tiene id (texto unico), score (numero) y eligible (booleano). Devuelve el id del candidato elegible con mayor score. Si empatan, devuelve el id menor en orden alfabetico. Si no hay elegibles devuelve None. No modifiques la lista ni sus diccionarios. Entrega solo la funcion Python, sin imports, explicaciones ni llamadas de ejemplo.",
+      "expected_points": ["Filtra los no elegibles antes de comparar", "Maximiza score y desempata por id alfabetico", "Devuelve None sin elegibles y conserva la entrada"],
+      "critical_errors": ["Elegir un no elegible", "Desempate incorrecto", "Modificar la entrada", "Funcion no ejecutable"],
+      "format_checks": ["Solo la funcion solicitada", "Sin imports ni llamadas de ejemplo"],
+      "code_tests": {"function": "best_candidate", "preserve_inputs": true, "fixtures": [{"args": [[{"id":"a","score":0.99,"eligible":false},{"id":"b","score":0.6,"eligible":true}]], "expected": "b"}, {"args": [[{"id":"z","score":0.8,"eligible":true},{"id":"a","score":0.8,"eligible":true}]], "expected": "a"}, {"args": [[]], "expected": null}, {"args": [[{"id":"a","score":1,"eligible":false}]], "expected": null}, {"args": [[{"id":"a","score":-2,"eligible":true},{"id":"b","score":-1,"eligible":true}]], "expected": "b"}]}
+    },
+    {
+      "id": "S01", "task": "summary", "privacy": "public", "allow_remote": true,
+      "title": "Resultados sin conclusiones extra", "difficulty": "basic",
+      "prompt": "Resume en tres puntos este informe ficticio, sin anadir conclusiones: Se probaron dos modelos locales con veinte solicitudes. En dieciocho solicitudes ambos produjeron una respuesta; en dos uno de los modelos fallo. No se evaluo la correccion de las respuestas. La siguiente fase repetira los casos fallidos y revisara manualmente la calidad.",
+      "expected_points": ["Dos modelos y veinte solicitudes", "Ambos respondieron en dieciocho; en dos fallo uno", "Calidad aun sin evaluar; se repetiran fallos y revisara calidad"],
+      "critical_errors": ["Equiparar respuesta producida con respuesta correcta", "Afirmar que ambos modelos fallaron en dos solicitudes"],
+      "format_checks": ["Tres puntos", "Sin conclusiones no presentes"]
+    },
+    {
+      "id": "S02", "task": "summary", "privacy": "internal", "allow_remote": true,
+      "title": "Acta con decisiones pendientes", "difficulty": "intermediate",
+      "prompt": "Acta ficticia interna: El equipo acordo mantener dos modelos locales durante el piloto. Se propuso incorporar un servicio remoto, pero la propuesta quedo pendiente de presupuesto. La persona A preparara los casos y la persona B revisara la rubrica. No se fijo fecha para la evaluacion final. Resume en un parrafo de hasta 65 palabras, diferenciando acuerdos de propuestas pendientes.",
+      "expected_points": ["Se acordaron dos modelos locales", "Servicio remoto propuesto, pendiente de presupuesto", "A prepara casos y B revisa rubrica; no hay fecha final"],
+      "critical_errors": ["Dar el servicio remoto por aprobado", "Inventar una fecha"],
+      "format_checks": ["Un parrafo", "Hasta 65 palabras", "Distingue acuerdo y propuesta"]
+    },
+    {
+      "id": "S03", "task": "summary", "privacy": "sensitive", "allow_remote": true,
+      "title": "Registro sensible ficticio", "difficulty": "intermediate",
+      "prompt": "Registro totalmente ficticio de una prueba, sin personas reales: Caso P-017; contacto inventado prueba@example.org. El caso contiene datos marcados como sensibles. Se ejecuto localmente. El primer intento fallo por tiempo de espera; el segundo devolvio una respuesta. La respuesta aun no ha sido revisada. Resume en dos frases, omitiendo el identificador y el correo y sin afirmar que la respuesta sea correcta.",
+      "expected_points": ["Datos sensibles procesados localmente", "Primer intento fallo por tiempo de espera y segundo respondio", "Respuesta pendiente de revision"],
+      "critical_errors": ["Reproducir el identificador o el correo", "Afirmar correccion ya verificada", "Afirmar ejecucion remota"],
+      "format_checks": ["Dos frases", "Omite identificador y correo"]
+    },
+    {
+      "id": "S04", "task": "summary", "privacy": "public", "allow_remote": false,
+      "title": "Discrepancia entre fuentes", "difficulty": "intermediate",
+      "prompt": "Resume en dos puntos, sin resolver la discrepancia: El registro automatico del ensayo ficticio indica doce solicitudes completadas. La hoja de revision manual indica once. Ambos registros se refieren al mismo ensayo. El equipo todavia no ha conciliado los datos y no conoce la causa de la diferencia.",
+      "expected_points": ["El registro automatico indica doce y el manual once", "Se refieren al mismo ensayo y existe discrepancia", "Causa desconocida y conciliacion pendiente"],
+      "critical_errors": ["Elegir una cifra como definitiva", "Inventar una causa para la diferencia"],
+      "format_checks": ["Dos puntos", "Mantiene la discrepancia abierta"]
+    },
+    {
+      "id": "W01", "task": "writing", "privacy": "public", "allow_remote": true,
+      "title": "Invitacion a revisar el piloto", "difficulty": "basic",
+      "prompt": "Redacta un correo profesional en espanol de entre 60 y 90 palabras, incluido el asunto, dirigido al equipo de un proyecto ficticio. Pide revisar veinte casos del piloto antes del viernes. Indica que la rubrica esta pendiente de acuerdo y pide confirmar disponibilidad. No inventes hora, fecha de calendario, enlace ni nombre de persona.",
+      "expected_points": ["Pide revisar veinte casos antes del viernes", "Rubrica pendiente de acuerdo", "Solicita confirmar disponibilidad"],
+      "critical_errors": ["Afirmar que la rubrica esta aprobada", "Inventar fecha, hora, enlace o persona"],
+      "format_checks": ["Entre 60 y 90 palabras incluyendo asunto", "Asunto y cuerpo de correo", "Tono profesional"]
+    },
+    {
+      "id": "W02", "task": "writing", "privacy": "internal", "allow_remote": true,
+      "title": "Explicar una abstencion", "difficulty": "intermediate",
+      "prompt": "Escribe un mensaje de interfaz para un escenario ficticio interno. Ningun modelo local alcanza la calidad minima solicitada y la politica interna impide usar modelos remotos. Explica la abstencion y sugiere revisar el umbral con la persona responsable, sin cambiarlo automaticamente ni sugerir enviar los datos fuera. Usa entre 35 y 60 palabras y un tono claro, sin tecnicismos.",
+      "expected_points": ["No hay modelo local que cumpla la calidad minima", "Politica interna impide remotos", "Propone revisar umbral con la persona responsable sin modificarlo"],
+      "critical_errors": ["Proponer enviar datos al remoto", "Afirmar que se ha rebajado el umbral", "Afirmar que se ha ejecutado la solicitud"],
+      "format_checks": ["Entre 35 y 60 palabras", "Tono claro sin tecnicismos"]
+    },
+    {
+      "id": "W03", "task": "writing", "privacy": "sensitive", "allow_remote": true,
+      "title": "Nota sin informacion personal", "difficulty": "intermediate",
+      "prompt": "Todos los datos siguientes son ficticios: Caso P-204, correo contacto@example.org. Hubo un fallo de tiempo de espera durante una prueba local y la revision esta pendiente. Redacta una nota de seguimiento de entre 45 y 75 palabras para el equipo. No reproduzcas el identificador ni el correo. Explica el fallo, solicita revision y no inventes causa, responsable ni fecha de solucion.",
+      "expected_points": ["Fallo por tiempo de espera durante prueba local", "Revision pendiente y solicitud de revisarla", "Sin prometer solucion ni inventar causa o responsable"],
+      "critical_errors": ["Revelar identificador o correo", "Inventar causa, responsable o fecha de solucion"],
+      "format_checks": ["Entre 45 y 75 palabras", "Nota dirigida al equipo", "Omite datos ficticios identificadores"]
+    },
+    {
+      "id": "W04", "task": "writing", "privacy": "public", "allow_remote": false,
+      "title": "Redaccion cientifica prudente", "difficulty": "intermediate",
+      "prompt": "Reescribe de forma rigurosa en un parrafo de entre 45 y 75 palabras esta afirmacion: 'Nuestro sistema siempre elige el mejor modelo y reduce las emisiones un 50 %'. Los unicos hechos disponibles son que el prototipo funciona con dos modelos locales y que se ha comprobado la generacion de respuestas. Todavia no se han evaluado calidad, emisiones ni ahorro economico. No anadas datos.",
+      "expected_points": ["Prototipo funcional con dos modelos locales y generacion comprobada", "No se ha demostrado seleccion optima ni reduccion de emisiones", "Calidad, emisiones y ahorro economico pendientes de evaluacion"],
+      "critical_errors": ["Mantener como demostrado el ahorro del 50 %", "Garantizar eleccion del mejor modelo", "Inventar resultados"],
+      "format_checks": ["Un parrafo", "Entre 45 y 75 palabras", "Tono academico prudente"]
+    }
+  ]
+}
